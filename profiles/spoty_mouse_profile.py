@@ -2,15 +2,15 @@ from .default_profile import Profile
 import evdev
 from package import commands
 
-RIGHT_CLICK_DOWN = False
-LEFT_CLICK_DOWN = False
-RIGHT_CLICK_UP = False
-LEFT_CLICK_UP = False
+KEY_DOWN = evdev.KeyEvent.key_down
+KEY_UP = evdev.KeyEvent.key_up
+KEY_HOLD = evdev.KeyEvent.key_hold
 
+# event.type=1 event.code=272 event.value=1  RIGHT DOWN
 
-def default(event: evdev.InputEvent):
+def log(event: evdev.InputEvent):
     ignored_types = [0]
-    ignored_codes = [(2, 0), (2, 1)]
+    ignored_codes = [(2, 0), (2, 1), (2, 11)]
     if (
         event.type not in ignored_types
         and (event.type, event.code) not in ignored_codes
@@ -23,17 +23,29 @@ def default(event: evdev.InputEvent):
 
 def scroll(event: evdev.InputEvent):
     value = event.value
-    up = value > 0
+    code = 103 if value > 0 else 108
     return [
-        commands.KeyCommand(code=103 if up else 108, value=1),
-        commands.KeyCommand(code=103 if up else 108, value=0),
+        # ARROW KEY DOWN
+        commands.KeyCommand(code=code, value=1),
+        # ARROW KEY UP
+        commands.KeyCommand(code=code, value=0),
     ]
 
+def left_btn(event: evdev.InputEvent):
+    value = event.value
+    if value == KEY_DOWN:
+        return [
+        # ENTER KEY DOWN
+        commands.KeyCommand(code=28, value=1),
+        # ENTER KEY UP
+        commands.KeyCommand(code=28, value=0),
+    ]
+        
 
 spoty_mouse = {
-    "default": default,
+    "default": log,
     (2, 8): scroll,
-    # (2, 11)='SCROLL UP',
+    (1, 272): left_btn
 }
 
 
