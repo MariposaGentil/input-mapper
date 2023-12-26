@@ -1,6 +1,11 @@
 import evdev
 import argparse
 
+from package import system_repo
+from package import device_repo
+from package import commands
+from profiles import dj_mouse_profile
+
 class Main():
     def __init__(self):
         self.parser = argparse.ArgumentParser(
@@ -46,20 +51,6 @@ class Main():
         self.recon = self.args.get('recognized', False)
         self.all = self.args.get('all', False)
 
-    def list_devices(self, device_name):
-        all_devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
-        devices = []
-        for device in all_devices:
-            if device_name.lower() in device.name.lower():
-                print(f'Device found: {device.path}, {device.name}, {device.phys}')
-                devices.append(device)
-        return devices
-    
-    def get_device(self, device_name):
-        devices = self.list_devices(device_name)
-        assert len(devices) == 1
-        return devices[0]
-
     def grap_device(self, device: evdev.InputDevice, grab: bool):
         if grab:
             print('Grabbing device')
@@ -74,13 +65,36 @@ class Main():
     def run(self):
         self.handle_args()
         if self.list:
-            self.list_devices(self.device_name)
+            system_repo.list_devices(self.device_name)
             return
         try:
-            device = self.get_device(self.device_name)
-            self.grap_device(device, self.grab)
+            device = system_repo.get_device(self.device_name)
         except AssertionError:
             print('Could not select a device; probably zero or more than 1 device was returned')
+            
+        device = device_repo.Device(device)
+        profile = dj_mouse_profile.DjMouseProfile
+
+        if self.grab:
+            device.grab()
+            
+        OUT = system_repo.Output()
+        for event in device.read():
+            if self.all:
+                print(f'Device Command Received: {evdev.categorize(event)}')
+            parsed_event = device.parse(event, profile)
+            parsed_events = [parsed_event] if not isinstance(parsed_event, list) else parsed_event
+            if parsed_events:
+                if self.recon:
+                    print(f'Device Command Recognized: {evdev.categorize(event)}')
+
+                OUT.execute_command(parsed_events)
+
+                print(f'Device Command Parsed')
+                for event in parsed_events:
+                    print(parsed_event.__dict__)
+
+                
 
 if __name__ == '__main__':
     Main().run()
