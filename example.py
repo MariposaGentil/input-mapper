@@ -19,6 +19,7 @@
 
 # Import necessary libraries.
 import atexit
+
 # You need to install evdev with a package manager or pip3.
 import evdev  # (sudo pip3 install evdev)
 
@@ -38,7 +39,7 @@ REMAP_TABLE = {
 
 
 # The keyboard name we will intercept the events for. Obtainable with evtest.
-MATCH = 'AT Translated Set 2 keyboard'
+MATCH = "AT Translated Set 2 keyboard"
 # Find all input devices.
 devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
 # Limit the list to those containing MATCH and pick the first one.
@@ -50,7 +51,7 @@ kbd.grab()  # Grab, i.e. prevent the keyboard from emitting original events.
 soloing_caps = False  # A flag needed for CapsLock example later.
 
 # Create a new keyboard mimicking the original one.
-with evdev.UInput.from_device(kbd, name='kbdremap') as ui:
+with evdev.UInput.from_device(kbd, name="kbdremap") as ui:
     for ev in kbd.read_loop():  # Read events from original keyboard.
         if ev.type == evdev.ecodes.EV_KEY:  # Process key events.
             if ev.code == evdev.ecodes.KEY_PAUSE and ev.value == 1:
@@ -74,7 +75,7 @@ with evdev.UInput.from_device(kbd, name='kbdremap') as ui:
                 ui.write(evdev.ecodes.EV_KEY, ev.code, ev.value)
             # If we just pressed (or held) CapsLock, remember it.
             # Other keys will reset this flag.
-            soloing_caps = (ev.code == evdev.ecodes.KEY_CAPSLOCK and ev.value)
+            soloing_caps = ev.code == evdev.ecodes.KEY_CAPSLOCK and ev.value
         else:
             # Passthrough other events unmodified (e.g. SYNs).
             ui.write(ev.type, ev.code, ev.value)
