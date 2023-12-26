@@ -1,0 +1,5 @@
+# apt install gcc
+# apt install python3-dev
+
+evdev
+ipdb
