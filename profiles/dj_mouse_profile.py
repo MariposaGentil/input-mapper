@@ -1,4 +1,4 @@
-from . import Profile
+from .default_profile import Profile
 import evdev
 from package import commands
 

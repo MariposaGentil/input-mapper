@@ -8,7 +8,10 @@ def list_devices(search_term: str) -> [evdev.InputDevice]:
     all_devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
     devices = []
     for device in all_devices:
-        if search_term.lower() in device.name.lower():
+        if (
+            search_term.lower() in device.name.lower()
+            or search_term.lower() in device.path.lower()
+        ):
             print(f"Device found: {device.path}, {device.name}, {device.phys}")
             devices.append(device)
     return devices
