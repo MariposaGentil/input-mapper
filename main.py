@@ -42,14 +42,14 @@ class Main:
         self.grab = self.args.get("grab_device", False)
         self.recon = self.args.get("recognized", False)
         self.all = self.args.get("all", False)
-        self.profile = self.args.get('profile', '')
+        self.profile = self.args.get("profile", "")
 
     def get_profile(self):
         if not self.profile:
-            return REGISTERED_PROFILES['DEFAULT_PROFILE']
+            return REGISTERED_PROFILES["DEFAULT_PROFILE"]
         else:
             return REGISTERED_PROFILES[self.profile]
-    
+
     def run(self):
         self.handle_args()
         if self.list:
@@ -87,7 +87,7 @@ class Main:
 
                 print(f"Device Commands Parsed")
                 for event in parsed_events:
-                    print(f'- {event.__dict__}')
+                    print(f"- {event.__dict__}")
 
 
 if __name__ == "__main__":
