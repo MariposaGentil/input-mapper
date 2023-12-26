@@ -35,6 +35,5 @@ class Output:
 
     def execute_command(self, events: list[Command]):
         for event in events:
-            print(event.__dict__)
             self.OUT.write(event.type, event.code, event.value)
         self.OUT.syn()

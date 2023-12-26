@@ -82,12 +82,7 @@ class Main:
             if parsed_events:
                 if self.recon:
                     print(f"Device Command Recognized: {evdev.categorize(event)}")
-
                 OUT.execute_command(parsed_events)
-
-                print(f"Device Commands Parsed")
-                for event in parsed_events:
-                    print(f"- {event.__dict__}")
 
 
 if __name__ == "__main__":
