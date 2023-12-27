@@ -25,15 +25,10 @@ def log(event: evdev.InputEvent):
 # Volume Control
 def scroll__shifted(event: evdev.InputEvent):
     value = event.value
-    code = 103 if value > 0 else 108
-    alt_code = 56
-    print(f'ALT {"UP" if code == 103 else "DOWN"} ->')
+    code = 115 if value > 0 else 114
+    print(f'VOLUME {"UP" if code == 115 else "DOWN"}')
     return [
-        # ALT (CODE) DOWN
-        commands.KeyCommand(code=alt_code, value=1),
         commands.KeyCommand(code=code, value=1),
-        # ALT (CODE) UP
-        commands.KeyCommand(code=alt_code, value=0),
         commands.KeyCommand(code=code, value=0),
     ]
 
