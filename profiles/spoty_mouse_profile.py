@@ -10,6 +10,7 @@ SHIFT_ENABLED = False
 
 # event.type=1 event.code=272 event.value=1  RIGHT DOWN
 
+
 def log(event: evdev.InputEvent):
     ignored_types = [0, 4]
     ignored_codes = [(2, 0), (2, 1), (2, 11)]
@@ -22,6 +23,7 @@ def log(event: evdev.InputEvent):
         print("----------------------------")
     return None
 
+
 # Volume Control
 def scroll__shifted(event: evdev.InputEvent):
     value = event.value
@@ -31,6 +33,7 @@ def scroll__shifted(event: evdev.InputEvent):
         commands.KeyCommand(code=code, value=1),
         commands.KeyCommand(code=code, value=0),
     ]
+
 
 # Playlist Scroll
 def scroll__main(event: evdev.InputEvent):
@@ -52,17 +55,39 @@ def scroll(event: evdev.InputEvent):
     else:
         return scroll__main(event)
 
+
 # Song Selection
-def left_btn(event: evdev.InputEvent):
+def left_btn__main(event: evdev.InputEvent):
     value = event.value
     if value == KEY_DOWN:
-        print('ENTER')
+        print("ENTER")
         return [
-        # ENTER KEY DOWN
-        commands.KeyCommand(code=28, value=1),
-        # ENTER KEY UP
-        commands.KeyCommand(code=28, value=0),
-    ]
+            # ENTER KEY DOWN
+            commands.KeyCommand(code=28, value=1),
+            # ENTER KEY UP
+            commands.KeyCommand(code=28, value=0),
+        ]
+
+
+def left_btn__shifted(event: evdev.InputEvent):
+    value = event.value
+    if value == KEY_UP:
+        print("SPACE BAR")
+        return [
+            # SPACE BAR KEY DOWN
+            commands.KeyCommand(code=57, value=KEY_DOWN),
+            # SPACE BAR KEY UP
+            commands.KeyCommand(code=57, value=KEY_UP),
+        ]
+
+
+def left_btn(event: evdev.InputEvent):
+    global SHIFT_ENABLED
+    if SHIFT_ENABLED:
+        return left_btn__shifted(event)
+    else:
+        return left_btn__main(event)
+
 
 # Enable Shift
 def right_btn(event: evdev.InputEvent):
@@ -70,17 +95,18 @@ def right_btn(event: evdev.InputEvent):
     value = event.value
     if value == KEY_DOWN:
         SHIFT_ENABLED = True
-        print(f'{SHIFT_ENABLED=}')
+        print(f"{SHIFT_ENABLED=}")
     if value == KEY_UP:
         SHIFT_ENABLED = False
-        print(f'{SHIFT_ENABLED=}')
+        print(f"{SHIFT_ENABLED=}")
     return None
+
 
 spoty_mouse = {
     "default": log,
     (2, 8): scroll,
     (1, 272): left_btn,
-    (1,  273): right_btn,
+    (1, 273): right_btn,
 }
 
 
